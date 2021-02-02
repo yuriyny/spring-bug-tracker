@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 import java.time.Instant;
 import java.util.List;
@@ -20,7 +21,9 @@ public class Ticket {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long ticketId;
-    private Long ticketName;
+    private String ticketName;
+    @NotBlank(message = "Description is required")
+    private String description;
     private Instant createdDate;
     private Instant updatedDate;
     private Priority priority;
