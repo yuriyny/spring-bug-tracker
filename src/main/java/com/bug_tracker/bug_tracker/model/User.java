@@ -32,5 +32,7 @@ public class User {
     private boolean enabled;
     @OneToMany(mappedBy = "creator")
     private List<Project> projects;
+    @OneToMany(mappedBy = "user")
+    private List<Participant> participants;
 
 }

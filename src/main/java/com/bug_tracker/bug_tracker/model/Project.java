@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import java.time.Instant;
 import java.util.List;
 
@@ -21,10 +20,11 @@ public class Project {
     @GeneratedValue(strategy = IDENTITY)
     private Long projectId;
     private String projectName;
+    private String projectDescription;
     @OneToMany(mappedBy = "project")
     private List<Ticket> tickets;
     private Instant createdDate;
-    @ManyToOne(fetch = LAZY )
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "creator_id")
     private User creator;
     @OneToMany(mappedBy = "project")

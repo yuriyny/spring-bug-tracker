@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.Instant;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -13,15 +14,14 @@ import static javax.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Participant {
+@Table(name = "token")
+public class VerificationToken {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    private Long participantId;
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id")
+    private Long id;
+    private String token;
+    @OneToOne(fetch = LAZY)
     private User user;
-    private Role role;
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "project_id")
-    private Project project;
+    private Instant expiryDate;
 }

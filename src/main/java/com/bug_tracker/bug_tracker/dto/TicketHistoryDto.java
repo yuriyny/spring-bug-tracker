@@ -1,11 +1,11 @@
 package com.bug_tracker.bug_tracker.dto;
 
-import com.bug_tracker.bug_tracker.model.Participant;
 import com.bug_tracker.bug_tracker.model.Priority;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 import java.time.Instant;
 
@@ -13,17 +13,13 @@ import java.time.Instant;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TicketDto {
-    private Long ticketId;
+public class TicketHistoryDto {
+    private Long ticketHistoryId;
     private String ticketName;
-    private Long projectId;
-    private String projectName;
     private String description;
-    private Priority priority;
-    private Instant createdDate;
+    private Long ticket;
     private Instant updatedDate;
-    private Long creatorId;
-    private String creatorName;
+    private Priority priority;
+    private Long updateParticipant;
     private Long assignedParticipant;
-    private String assignedParticipantName;
 }
