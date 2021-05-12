@@ -54,7 +54,16 @@ public class ProjectController {
         return this.projectService.getProjectById(projectId);
     }
 
+    @PostMapping("/update")
+    public ProjectDto update(@RequestBody @Valid ProjectDto projectDto) {
+        return projectService.update(projectDto);
+    }
 
+    @GetMapping("/get-projects")
+    public ResponseEntity<List<ProjectDto>> getProjectsForCurrentUser() {
+        return status(OK)
+                .body(projectService.getProjectsForCurrentUser());
+    }
 
 
 }

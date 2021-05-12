@@ -36,9 +36,12 @@ public class TicketService {
 
     //creating
     public TicketDto save(TicketDto ticketDto) {
+        //System.out.println("==================");
+        //System.out.println(ticketDto);
         Ticket t = ticketMapper.mapDtoToTicket(ticketDto);
-        Project p = projectRepository.findByProjectName(ticketDto.getProjectName())
-                .orElseThrow(() -> new ProjectNotFoundException(ticketDto.getProjectName()));
+        Project p = projectRepository.getOne(ticketDto.getProjectId());
+        //Project p = projectRepository.findByProjectName(ticketDto.getProjectName())
+        //       .orElseThrow(() -> new ProjectNotFoundException(ticketDto.getProjectName()));
         t.setProject(p);
         Participant assignedParticipant = participantRepository.getOne(ticketDto.getAssignedParticipant());
         User u = authService.getCurrentUser();
@@ -60,7 +63,7 @@ public class TicketService {
         return ticketMapper.mapTicketToDto(t);
     }
 
-    public TicketHistoryDto update(TicketHistoryDto ticketHistoryDto){
+    public TicketHistoryDto update(TicketHistoryDto ticketHistoryDto) {
         Ticket t = ticketRepository.getOne(ticketHistoryDto.getTicket());
         t.setTicketName(ticketHistoryDto.getTicketName());
         t.setDescription(ticketHistoryDto.getDescription());
@@ -130,12 +133,12 @@ public class TicketService {
         return this.ticketMapper.mapTicketToDto(ticketRepository.getOne(ticketId));
     }
 
-    public List<TicketHistoryDto> getTicketHistoryByTicketId(Long ticketId){
+    public List<TicketHistoryDto> getTicketHistoryByTicketId(Long ticketId) {
         Ticket t = ticketRepository.getOne(ticketId);
         TicketDto td = ticketMapper.mapTicketToDto(t);
         System.out.println(td);
 
-        return ticketHistoryRepository.findByTicket(t).stream().map(th->
+        return ticketHistoryRepository.findByTicket(t).stream().map(th ->
                 ticketHistoryMapper.mapTicketHistoryToDto(th))
                 .collect(toList());
     }

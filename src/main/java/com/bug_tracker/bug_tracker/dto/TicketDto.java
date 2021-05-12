@@ -1,6 +1,5 @@
 package com.bug_tracker.bug_tracker.dto;
 
-import com.bug_tracker.bug_tracker.model.Participant;
 import com.bug_tracker.bug_tracker.model.Priority;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

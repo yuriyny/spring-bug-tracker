@@ -4,6 +4,7 @@ package com.bug_tracker.bug_tracker.controller;
 import com.bug_tracker.bug_tracker.dto.CommentDto;
 import com.bug_tracker.bug_tracker.dto.TicketDto;
 import com.bug_tracker.bug_tracker.dto.TicketHistoryDto;
+import com.bug_tracker.bug_tracker.model.Participant;
 import com.bug_tracker.bug_tracker.service.TicketService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

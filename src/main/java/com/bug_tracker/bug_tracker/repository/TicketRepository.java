@@ -9,8 +9,6 @@ import java.util.List;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-    //Optional<Ticket> findByComments(Comment comment);
-    //Optional<Ticket> findByName(String ticketName);
     List<Ticket> findByProject(Project project);
 
 }

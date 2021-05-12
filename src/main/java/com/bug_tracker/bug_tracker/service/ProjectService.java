@@ -15,6 +15,7 @@ import com.bug_tracker.bug_tracker.repository.ProjectRepository;
 import com.bug_tracker.bug_tracker.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,6 @@ public class ProjectService {
 
     @Transactional
     public ProjectDto save(ProjectDto projectDto) {
-        System.out.println(projectDto);
         Project p = projectMapper.mapDtoToProject(projectDto);
         User u = authService.getCurrentUser();
         p.setCreator(u);
@@ -85,9 +85,8 @@ public class ProjectService {
 
     @Transactional
     public List<ProjectDto> getUserProjectsByUsername(String username) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        System.out.println(auth.getPrincipal());
+        //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        //System.out.println(auth.getPrincipal());
         User u = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
 
@@ -101,10 +100,40 @@ public class ProjectService {
     public ProjectDto getProjectById(Long projectId) {
         return this.projectMapper.mapProjectToDto(this.projectRepository.getOne(projectId));
     }
-    /*
+
     @Transactional
-    public Object getAllAvailableUsersForProject(Long projectId) {
+    public ProjectDto update(ProjectDto projectDto) {
+        Project p = projectRepository.getOne(projectDto.getProjectId());
+        p.setProjectName(projectDto.getProjectName());
+        p.setProjectDescription(projectDto.getProjectDescription());
+        projectRepository.save(p);
+        return projectDto;
     }
 
-    */
+    @Transactional
+    public void test(){
+        User u = authService.getCurrentUser();
+        List<Participant> p = participantRepository.findParticipantByUserAndRole(u,Role.ADMIN);
+        for(Participant pp: p){
+            System.out.println(pp.getParticipantId());
+        }
+        List<Long> l = participantRepository.findProjectIdByUserAndRole(u, Role.ADMIN);
+        for(Long ll:l){
+            System.out.println(ll);
+        }
+
+        List<Project> pro = projectRepository.findProjectsByUserAndRole(u, Role.ADMIN);
+        for(Project ff: pro){
+            System.out.println(ff.getProjectName());
+        }
+    }
+
+    @Transactional
+    public List<ProjectDto> getProjectsForCurrentUser() {
+        User u = authService.getCurrentUser();
+        return projectRepository.findProjectsByUserAndRole(u, Role.ADMIN)
+                .stream()
+                .map(project -> projectMapper.mapProjectToDto(project))
+                .collect(toList());
+    }
 }
