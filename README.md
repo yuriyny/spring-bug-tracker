@@ -1,2 +1,2 @@
 # spring-bug-tracker
-Backend (Java Spring) for a bug-tracker application
+Back-end (Java Spring) for the Bug Tracker application
