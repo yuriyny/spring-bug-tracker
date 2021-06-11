@@ -1,6 +1,7 @@
 package com.bug_tracker.bug_tracker.dto;
 
 import com.bug_tracker.bug_tracker.model.Priority;
+import com.bug_tracker.bug_tracker.model.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,4 +26,5 @@ public class TicketDto {
     private String creatorName;
     private Long assignedParticipant;
     private String assignedParticipantName;
+    private Status status;
 }

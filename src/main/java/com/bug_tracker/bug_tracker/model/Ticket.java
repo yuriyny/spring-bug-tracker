@@ -37,6 +37,7 @@ public class Ticket {
     private Participant assignedParticipant;
     @OneToMany(mappedBy = "ticket")
     private List<TicketHistory> ticketHistory;
+    private Status status;
 
 
 }

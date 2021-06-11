@@ -1,8 +1,10 @@
 package com.bug_tracker.bug_tracker.controller;
 
+import com.bug_tracker.bug_tracker.dto.NotificationDto;
 import com.bug_tracker.bug_tracker.dto.ParticipantDto;
 import com.bug_tracker.bug_tracker.dto.ParticipantRequest;
 import com.bug_tracker.bug_tracker.dto.ProjectDto;
+import com.bug_tracker.bug_tracker.model.Role;
 import com.bug_tracker.bug_tracker.service.ProjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -64,6 +66,52 @@ public class ProjectController {
         return status(OK)
                 .body(projectService.getProjectsForCurrentUser());
     }
+
+    @GetMapping("/get-recent-projects")
+    public ResponseEntity<List<ProjectDto>> getRecentProjectsForCurrentUser() {
+        return status(OK)
+                .body(projectService.getRecentProjects());
+    }
+
+    @GetMapping("/get-own-projects")
+    public ResponseEntity<List<ProjectDto>> getOwnProjectsForCurrentUser() {
+        return status(OK)
+                .body(projectService.getOwnUserProjects());
+    }
+
+    @GetMapping("/get-participants-all")
+    public ResponseEntity<List<ParticipantDto>> getAllProjectParticipantsCurrentUser() {
+        return status(OK)
+                .body(projectService.getAllProjectParticipantsCurrentUser());
+    }
+
+    @GetMapping("/get-participant/{projectId}")
+    public ResponseEntity<ParticipantDto> getCurrentProjectParticipant(@PathVariable("projectId") Long projectId) {
+        return status(OK)
+                .body(projectService.getCurrentProjectParticipant(projectId));
+    }
+
+    @PostMapping("/send-notification")
+    public NotificationDto sendNotification(@RequestBody NotificationDto notificationDto){
+        return projectService.sendNotification(notificationDto);
+    }
+
+    @GetMapping("/get-notifications")
+    public ResponseEntity<List<NotificationDto>> getAllNotificationsForCurrentUser() {
+        return status(OK)
+                .body(projectService.getAllNotificationsForCurrentUser());
+    }
+    @DeleteMapping("/delete-notification/{id}")
+    public boolean deleteNotification(@PathVariable("id") Long id){
+        return projectService.removeNotification(id);
+    }
+
+    @GetMapping("/get-projects-by-role/{role}")
+    public ResponseEntity<List<ProjectDto>> getProjectsByRole(@PathVariable("role") Role role) {
+        return status(OK)
+                .body(projectService.getProjectsByRole(role));
+    }
+
 
 
 }

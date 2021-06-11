@@ -37,7 +37,7 @@ public class TicketService {
     //creating
     public TicketDto save(TicketDto ticketDto) {
         //System.out.println("==================");
-        //System.out.println(ticketDto);
+        System.out.println(ticketDto);
         Ticket t = ticketMapper.mapDtoToTicket(ticketDto);
         Project p = projectRepository.getOne(ticketDto.getProjectId());
         //Project p = projectRepository.findByProjectName(ticketDto.getProjectName())
@@ -48,6 +48,7 @@ public class TicketService {
         Participant participant = participantRepository.findParticipantByUserAndProject(u, p);
         t.setCreator(participant);
         t.setAssignedParticipant(assignedParticipant);
+        t.setStatus(Status.OPEN);
         ticketRepository.save(t);
         TicketHistory ticketHistory = new TicketHistory();
         ticketHistory.setTicket(t);
@@ -136,10 +137,43 @@ public class TicketService {
     public List<TicketHistoryDto> getTicketHistoryByTicketId(Long ticketId) {
         Ticket t = ticketRepository.getOne(ticketId);
         TicketDto td = ticketMapper.mapTicketToDto(t);
-        System.out.println(td);
-
         return ticketHistoryRepository.findByTicket(t).stream().map(th ->
                 ticketHistoryMapper.mapTicketHistoryToDto(th))
                 .collect(toList());
     }
+
+    public List<TicketDto> getTicketForCurrentUser() {
+        User u = authService.getCurrentUser();
+        return ticketRepository.findTicketsByUser(u).stream().map(ticket ->
+                ticketMapper.mapTicketToDto(ticket))
+                .collect(toList());
+    }
+
+    public List<TicketDto> getAssignedTicketForCurrentUser() {
+        User u = authService.getCurrentUser();
+        return ticketRepository.findAssignedTicketsByUser(u).stream().map(ticket ->
+                ticketMapper.mapTicketToDto(ticket))
+                .collect(toList());
+    }
+
+    public List<TicketDto> getTicketCreatedByUser() {
+        User u = authService.getCurrentUser();
+        return ticketRepository.findCreatedTicketsByUser(u).stream().map(ticket ->
+                ticketMapper.mapTicketToDto(ticket))
+                .collect(toList());
+    }
+
+    public List<TicketDto> getOpenTicketForCurrentUser() {
+        User u = authService.getCurrentUser();
+        return ticketRepository.findTicketsByUserAndStatus(u, Status.OPEN).stream().map(ticket ->
+                ticketMapper.mapTicketToDto(ticket))
+                .collect(toList());
+    }
+    public List<TicketDto> getClosedTicketForCurrentUser() {
+        User u = authService.getCurrentUser();
+        return ticketRepository.findTicketsByUserAndStatus(u, Status.CLOSED).stream().map(ticket ->
+                ticketMapper.mapTicketToDto(ticket))
+                .collect(toList());
+    }
+
 }

@@ -65,4 +65,31 @@ public class TicketController {
         return status(OK).body(ticketService.getTicketHistoryByTicketId(ticketId));
     }
 
+    @GetMapping("/tickets-current-user")
+    public ResponseEntity<List<TicketDto>> getTicketForCurrentUser() {
+        return status(OK).body(ticketService.getTicketForCurrentUser());
+    }
+
+    @GetMapping("/tickets-assigned-current-user")
+    public ResponseEntity<List<TicketDto>> getAssignedTicketForCurrentUser() {
+        return status(OK).body(ticketService.getAssignedTicketForCurrentUser());
+    }
+
+    @GetMapping("/tickets-open-current-user")
+    public ResponseEntity<List<TicketDto>> getOpenTicketForCurrentUser() {
+        return status(OK).body(ticketService.getOpenTicketForCurrentUser());
+    }
+
+    @GetMapping("/tickets-closed-current-user")
+    public ResponseEntity<List<TicketDto>> getClosedTicketForCurrentUser() {
+        return status(OK).body(ticketService.getClosedTicketForCurrentUser());
+    }
+
+    @GetMapping("/tickets-created-by-user")
+    public ResponseEntity<List<TicketDto>> getTicketCreatedByUser() {
+        return status(OK).body(ticketService.getTicketCreatedByUser());
+    }
+
+
+
 }

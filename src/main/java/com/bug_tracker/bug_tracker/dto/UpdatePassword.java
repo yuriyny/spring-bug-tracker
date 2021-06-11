@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectDto {
-    private Long projectId;
-    private String projectName;
-    private String projectDescription;
-    private String creator;
+public class UpdatePassword {
+    private String oldPassword;
+    private String newPassword;
 }

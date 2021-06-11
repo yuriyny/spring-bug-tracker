@@ -16,7 +16,9 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     List<Participant> findParticipantByUserAndRole(User user, Role role);
     List<Participant> findByProject(Project project);
     Participant findParticipantByUserAndProject(User user, Project project);
-    @Query("select p.project.projectId from Participant p where p.user = ?1 and  p.role =?2")
-    List<Long> findProjectIdByUserAndRole(User user, Role role);
+    @Query("select participant from Participant participant where participant.project in (select p.project from Participant p where p.user = ?1)")
+    List<Participant> findParticipantsByUser(User user);
+
+
 
 }

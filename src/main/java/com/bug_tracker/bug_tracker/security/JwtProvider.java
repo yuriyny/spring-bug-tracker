@@ -50,7 +50,6 @@ public class JwtProvider {
 
     private PrivateKey getPrivateKey() {
         try {
-            System.out.println("hhhhhhhhh");
             return (PrivateKey) keyStore.getKey("springblog", "1111111".toCharArray());
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
             throw new SpringException("Exception occured while retrieving public key from keystore", e);
@@ -75,7 +74,8 @@ public class JwtProvider {
                 .setSigningKey(getPublickey())
                 .parseClaimsJws(token)
                 .getBody();
-
+        System.out.println( claims.getSubject());
+        System.out.println( claims.getId());
         return claims.getSubject();
     }
 

@@ -17,4 +17,5 @@ public class ParticipantDto {
     private String email;
     private Role role;
     private Long projectId;
+    private String projectName;
 }

@@ -1,15 +1,15 @@
 package com.bug_tracker.bug_tracker.service;
 
+import com.bug_tracker.bug_tracker.dto.NotificationDto;
 import com.bug_tracker.bug_tracker.dto.ParticipantDto;
 import com.bug_tracker.bug_tracker.dto.ParticipantRequest;
 import com.bug_tracker.bug_tracker.dto.ProjectDto;
 import com.bug_tracker.bug_tracker.exceptions.UserNotFoundException;
+import com.bug_tracker.bug_tracker.mapper.NotificationMapper;
 import com.bug_tracker.bug_tracker.mapper.ParticipantMapper;
 import com.bug_tracker.bug_tracker.mapper.ProjectMapper;
-import com.bug_tracker.bug_tracker.model.Participant;
-import com.bug_tracker.bug_tracker.model.Project;
-import com.bug_tracker.bug_tracker.model.Role;
-import com.bug_tracker.bug_tracker.model.User;
+import com.bug_tracker.bug_tracker.model.*;
+import com.bug_tracker.bug_tracker.repository.NotificationRepository;
 import com.bug_tracker.bug_tracker.repository.ParticipantRepository;
 import com.bug_tracker.bug_tracker.repository.ProjectRepository;
 import com.bug_tracker.bug_tracker.repository.UserRepository;
@@ -21,7 +21,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -35,6 +38,8 @@ public class ProjectService {
     private final AuthService authService;
     private final ParticipantRepository participantRepository;
     private final ParticipantMapper participantMapper;
+    private final NotificationRepository notificationRepository;
+    private final NotificationMapper notificationMapper;
 
     @Transactional
     public ProjectDto save(ProjectDto projectDto) {
@@ -48,6 +53,7 @@ public class ProjectService {
         creator.setUser(u);
         participantRepository.save(creator);
         projectDto.setProjectId(save.getProjectId());
+        projectDto.setCreator(u.getUsername());
         return projectDto;
     }
 
@@ -73,6 +79,16 @@ public class ProjectService {
     }
 
     @Transactional
+    public ParticipantDto getCurrentProjectParticipant(Long projectId) {
+        User u = authService.getCurrentUser();
+        Project p = projectRepository.getOne(projectId);
+        Participant participant = participantRepository.findParticipantByUserAndProject(u,p);
+
+        return participantMapper.mapParticipantToDto(participant);
+
+    }
+
+    @Transactional
     public List<ProjectDto> getUserProjects(Long userId) {
         User u = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId.toString()));
@@ -82,17 +98,27 @@ public class ProjectService {
                 .map(participant -> projectMapper.mapProjectToDto(participant.getProject()))
                 .collect(toList());
     }
-
+    //getting all projects where current user take part in
     @Transactional
     public List<ProjectDto> getUserProjectsByUsername(String username) {
         //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         //System.out.println(auth.getPrincipal());
+
         User u = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
 
         return participantRepository.findByUser(u)
                 .stream()
                 .map(participant -> projectMapper.mapProjectToDto(participant.getProject()))
+                .collect(toList());
+    }
+    //get projects created by the user
+    @Transactional
+    public List<ProjectDto> getOwnUserProjects() {
+        User user = authService.getCurrentUser();
+        return projectRepository.findProjectsByCreator(user)
+                .stream()
+                .map(project -> projectMapper.mapProjectToDto(project))
                 .collect(toList());
     }
 
@@ -110,28 +136,70 @@ public class ProjectService {
         return projectDto;
     }
 
-    @Transactional
-    public void test(){
-        User u = authService.getCurrentUser();
-        List<Participant> p = participantRepository.findParticipantByUserAndRole(u,Role.ADMIN);
-        for(Participant pp: p){
-            System.out.println(pp.getParticipantId());
-        }
-        List<Long> l = participantRepository.findProjectIdByUserAndRole(u, Role.ADMIN);
-        for(Long ll:l){
-            System.out.println(ll);
-        }
-
-        List<Project> pro = projectRepository.findProjectsByUserAndRole(u, Role.ADMIN);
-        for(Project ff: pro){
-            System.out.println(ff.getProjectName());
-        }
-    }
-
+    //get projects for user with admin role
     @Transactional
     public List<ProjectDto> getProjectsForCurrentUser() {
         User u = authService.getCurrentUser();
         return projectRepository.findProjectsByUserAndRole(u, Role.ADMIN)
+                .stream()
+                .map(project -> projectMapper.mapProjectToDto(project))
+                .collect(toList());
+    }
+
+    @Transactional
+    public List<ProjectDto> getProjectsByRole(Role role) {
+        User u = authService.getCurrentUser();
+        return projectRepository.findProjectsByUserAndRole(u, role)
+                .stream()
+                .map(project -> projectMapper.mapProjectToDto(project))
+                .collect(toList());
+    }
+
+    @Transactional
+    public List<ParticipantDto> getAllProjectParticipantsCurrentUser() {
+        User u = authService.getCurrentUser();
+        return participantRepository.findParticipantsByUser(u)
+                .stream()
+                .map(participant -> participantMapper.mapParticipantToDto(participant))
+                .collect(toList());
+    }
+    @Transactional
+    public NotificationDto sendNotification(NotificationDto notificationDto) {
+        Notification n = new Notification();
+        User u = authService.getCurrentUser();
+        n.setSender(u);
+        User receiver = userRepository.getOne(notificationDto.getReceiverId());
+        n.setReceiver(receiver);
+        n.setRole(notificationDto.getRole());
+        n.setDate(Instant.now());
+        Project p = projectRepository.getOne(notificationDto.getProjectId());
+        n.setProject(p);
+        notificationRepository.save(n);
+        notificationDto.setNotificationId(n.getNotificationId());
+        notificationDto.setRole(n.getRole());
+        return notificationDto;
+    }
+    @Transactional
+    public List<NotificationDto> getAllNotificationsForCurrentUser() {
+        User u = authService.getCurrentUser();
+        return notificationRepository.findByReceiver(u)
+                .stream()
+                .map(notification -> notificationMapper.mapNotificationToDto(notification))
+                .collect(toList());
+    }
+
+    @Transactional
+    public boolean removeNotification(Long notificationId){
+        this.notificationRepository.deleteById(notificationId);
+        return true;
+    }
+
+    @Transactional
+    public List<ProjectDto> getRecentProjects() {
+        User u = authService.getCurrentUser();
+        Instant startDate = Instant.now();
+        Instant endDate = ZonedDateTime.now().minusDays(15).toInstant();
+        return projectRepository.findByCreatorAndCreatedDateBetween(u, endDate, startDate)
                 .stream()
                 .map(project -> projectMapper.mapProjectToDto(project))
                 .collect(toList());
