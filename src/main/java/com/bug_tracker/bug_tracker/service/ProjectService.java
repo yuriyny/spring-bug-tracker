@@ -165,18 +165,24 @@ public class ProjectService {
     }
     @Transactional
     public NotificationDto sendNotification(NotificationDto notificationDto) {
-        Notification n = new Notification();
+
         User u = authService.getCurrentUser();
-        n.setSender(u);
-        User receiver = userRepository.getOne(notificationDto.getReceiverId());
-        n.setReceiver(receiver);
-        n.setRole(notificationDto.getRole());
-        n.setDate(Instant.now());
+        User r = userRepository.getOne(notificationDto.getReceiverId());
         Project p = projectRepository.getOne(notificationDto.getProjectId());
-        n.setProject(p);
-        notificationRepository.save(n);
-        notificationDto.setNotificationId(n.getNotificationId());
-        notificationDto.setRole(n.getRole());
+
+        if (notificationRepository.findByReceiverAndAndProject(r, p) == null) {
+            Notification n = new Notification();
+            n.setSender(u);
+            User receiver = userRepository.getOne(notificationDto.getReceiverId());
+            n.setReceiver(receiver);
+            n.setRole(notificationDto.getRole());
+            n.setDate(Instant.now());
+
+            n.setProject(p);
+            notificationRepository.save(n);
+            notificationDto.setNotificationId(n.getNotificationId());
+            notificationDto.setRole(n.getRole());
+        }
         return notificationDto;
     }
     @Transactional

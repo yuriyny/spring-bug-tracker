@@ -1,6 +1,7 @@
 package com.bug_tracker.bug_tracker.dto;
 
 import com.bug_tracker.bug_tracker.model.Priority;
+import com.bug_tracker.bug_tracker.model.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +21,8 @@ public class TicketHistoryDto {
     private Instant updatedDate;
     private Priority priority;
     private Long updateParticipant;
+    private String updateParticipantName;
     private Long assignedParticipant;
+    private String assignedParticipantName;
+    private Status status;
 }

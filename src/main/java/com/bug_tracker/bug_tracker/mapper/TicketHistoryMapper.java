@@ -10,7 +10,10 @@ public interface TicketHistoryMapper {
     @Mapping(target = "ticket", expression = "java(ticketHistory.getTicket().getTicketId())")
     @Mapping(target = "ticketName", expression = "java(ticketHistory.getTicket().getTicketName())")
     @Mapping(target = "updateParticipant", expression = "java(ticketHistory.getUpdateParticipant().getParticipantId())")
+    @Mapping(target = "updateParticipantName", expression = "java(ticketHistory.getUpdateParticipant().getUser().getUsername())")
     @Mapping(target = "assignedParticipant", expression = "java(ticketHistory.getAssignedParticipant().getParticipantId())")
+    @Mapping(target = "assignedParticipantName", expression = "java(ticketHistory.getAssignedParticipant().getUser().getUsername())")
+    @Mapping(target = "status", ignore = true)
     TicketHistoryDto mapTicketHistoryToDto(TicketHistory ticketHistory);
 
     @Mapping(target = "updateParticipant", ignore = true)

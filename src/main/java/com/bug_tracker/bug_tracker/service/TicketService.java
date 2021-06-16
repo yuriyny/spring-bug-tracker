@@ -74,6 +74,7 @@ public class TicketService {
         Participant ap = this.participantRepository.getOne(ticketHistoryDto.getAssignedParticipant());
         t.setAssignedParticipant(ap);
         t.setUpdatedDate(Instant.now());
+        t.setStatus(ticketHistoryDto.getStatus());
         ticketRepository.save(t);
         TicketHistory ticketHistory = ticketHistoryMapper.mapDtoToTicketHistory(ticketHistoryDto);
         ticketHistory.setTicket(t);
